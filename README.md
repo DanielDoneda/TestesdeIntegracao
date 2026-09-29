@@ -11,8 +11,8 @@ Quiz online e gamificado usado após a apresentação sobre testes de integraç�
 ## Regras da pontuação
 
 - Cada questão começa valendo 1000 pontos.
-- O valor diminui continuamente durante 20 segundos.
-- Depois dos 20 segundos ainda é possível responder, valendo 1 ponto.
+- O valor diminui continuamente durante 30 segundos.
+- Depois dos 30 segundos ainda é possível responder, valendo 1 ponto.
 - Resposta incorreta vale 0.
 - O horário oficial e a pontuação são calculados no servidor.
 
