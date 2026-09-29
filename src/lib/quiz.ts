@@ -75,15 +75,15 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     explanation: "Cada @Test representa um cenário verificável. Um não deve depender do resultado deixado pelo outro.",
   },
   {
-    prompt: "Qual sequência combina com TDD?",
+    prompt: "Com base no que foi comparado entre o ImobFiscal e o Caso Hospitalar (Colômbia), qual é o tipo de dado correto que deve ser utilizado no JSON para evitar alterações indevidas de data e horário causadas por fusos horários (timezones) diferentes?",
     options: [
-      "Implementar tudo, apresentar e depois pensar em testes",
-      "Criar o banco, criar a tela e remover os testes que falharem",
-      "Escrever o teste, vê-lo falhar, implementar o necessário e melhorar o código",
-      "Copiar o teste pronto e ajustar até ficar verde sem ler o resultado",
+      "OffsetDateTime ou ZonedDateTime (com timezone no padrão ISO 8601).",
+      "String de texto comum sem formatação (como \"hoje à noite\" ou \"amanhã cedo\").",
+      "Integer para salvar o horário como um número inteiro qualquer.",
+      "LocalDateTime sem indicador de fuso horário.",
     ],
-    correctOption: 2,
-    explanation: "O ciclo clássico é vermelho, verde e refatoração: falhar primeiro, funcionar e depois melhorar.",
+    correctOption: 0,
+    explanation: "OffsetDateTime e ZonedDateTime preservam a informação do fuso horário no padrão ISO 8601, evitando que o mesmo instante seja interpretado como horários diferentes entre sistemas.",
   },
   {
     prompt: "Qual diferença prática separa um stub de um mock?",

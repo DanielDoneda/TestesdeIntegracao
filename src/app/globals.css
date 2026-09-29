@@ -118,6 +118,8 @@ h3 { font-size: 1.25rem; }
 .status-line.success { color: var(--green); }
 .room-code { color: var(--gold); font-family: var(--font-geist-mono), monospace; letter-spacing: .16em; }
 .question-meta { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; color: var(--muted); }
+.scoreboard-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+.scoreboard-actions .button { min-height: 42px; padding: 0 16px; }
 .score-live { color: var(--gold); font-size: clamp(2.6rem, 10vw, 5.5rem); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
 .score-label { color: var(--muted); text-transform: uppercase; letter-spacing: .15em; font-size: .72rem; font-weight: 800; }
 .question-title { font-size: clamp(1.5rem, 4vw, 2.5rem); line-height: 1.2; margin: 24px 0; }
@@ -166,4 +168,6 @@ h3 { font-size: 1.25rem; }
   .leader-avatar { width: 58px; height: 58px; }
   .leader-score { grid-column: 3; font-size: 1rem; }
   .mini-stats { grid-template-columns: 1fr; }
+  .question-meta { align-items: flex-start; }
+  .scoreboard-actions { align-items: flex-end; flex-direction: column; }
 }

@@ -41,6 +41,35 @@ export function ScoreboardClient() {
     setCode(inputCode.toUpperCase().replace(/[^A-Z0-9]/g, ""));
   }
 
+  function downloadRanking() {
+    if (!data?.leaderboard.length) return;
+
+    const safeCell = (value: string | number) => {
+      let text = String(value).replace(/"/g, '""');
+      if (/^[=+\-@]/.test(text)) text = "'" + text;
+      return `"${text}"`;
+    };
+    const rows = [
+      ["Posição", "Nome", "Pontos", "Respostas", "Classificação"],
+      ...data.leaderboard.map((leader, index) => [
+        index + 1,
+        leader.name,
+        leader.score,
+        leader.answered_count,
+        rankForScore(leader.score, leader.answered_count).title,
+      ]),
+    ];
+    const csv = "\uFEFF" + rows.map((row) => row.map(safeCell).join(";")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ranking-${code}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   if (!code) {
     return (
       <section className="panel">
@@ -54,7 +83,15 @@ export function ScoreboardClient() {
 
   return (
     <>
-      <div className="question-meta"><span>Sala <strong className="room-code">{code}</strong></span><span>{data?.room.status === "finished" ? "Resultado final" : "Atualização ao vivo"}</span></div>
+      <div className="question-meta">
+        <span>Sala <strong className="room-code">{code}</strong></span>
+        <div className="scoreboard-actions">
+          <span>{data?.room.status === "finished" ? "Resultado final" : "Atualização ao vivo"}</span>
+          {data?.room.status === "finished" && data.leaderboard.length > 0 && (
+            <button className="button button-primary" type="button" onClick={downloadRanking}>Baixar ranking (.CSV)</button>
+          )}
+        </div>
+      </div>
       <section className="leaderboard" aria-live="polite">
         {!data?.leaderboard.length && <div className="panel empty-state">O placar está fazendo aquecimento. Ainda não entrou ninguém.</div>}
         {data?.leaderboard.map((leader, index) => {
