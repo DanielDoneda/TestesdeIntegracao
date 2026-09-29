@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { downloadRankingCsv, RankingEntry } from "@/lib/ranking-csv";
 
 type RoomState = {
   code: string;
@@ -87,6 +88,22 @@ export function ControlClient() {
     finally { setBusy(false); }
   }
 
+  async function downloadRanking() {
+    if (!connectedCode) return;
+    setBusy(true); setMessage("");
+    try {
+      const data: { leaderboard: RankingEntry[] } = await readJson(
+        await fetch("/api/rooms/" + connectedCode + "/leaderboard", { cache: "no-store" }),
+      );
+      if (!downloadRankingCsv(connectedCode, data.leaderboard)) {
+        throw new Error("Ainda não há participantes para incluir no ranking.");
+      }
+      setMessage("Ranking baixado. O arquivo está pronto para abrir no Excel.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível baixar o ranking.");
+    } finally { setBusy(false); }
+  }
+
   const origin = typeof window === "undefined" ? "" : window.location.origin;
 
   if (!connectedCode || !room) {
@@ -120,6 +137,7 @@ export function ControlClient() {
           <button className="button button-primary" disabled={busy || room.status === "question" || room.status === "finished"} onClick={() => control("next")}>{room.currentQuestion < 0 ? "Liberar primeira questão" : "Próxima questão"}</button>
           <button className="button button-secondary" disabled={busy || room.status !== "question"} onClick={() => control("reveal")}>Encerrar rodada</button>
           <button className="button button-danger" disabled={busy || room.status === "finished"} onClick={() => control("finish")}>Finalizar quiz</button>
+          {room.status === "finished" && <button className="button button-primary" disabled={busy} onClick={downloadRanking}>Baixar classificação (.CSV)</button>}
           <button className="button button-ghost" disabled={busy} onClick={() => control("reset")}>Reiniciar pontuação</button>
         </div>
         <p className={"status-line " + (message ? "success" : "")} aria-live="polite">{message}</p>
