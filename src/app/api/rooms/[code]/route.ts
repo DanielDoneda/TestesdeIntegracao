@@ -24,6 +24,9 @@ export async function GET(_request: Request, context: { params: Promise<{ code: 
     ]);
 
     const question = room.current_question >= 0 ? publicQuestion(room.current_question) : null;
+    const questionElapsedMs = room.status === "question" && room.question_started_at
+      ? Math.max(0, Date.now() - new Date(room.question_started_at).getTime())
+      : null;
     return Response.json({
       room: {
         code: room.code,
@@ -31,6 +34,7 @@ export async function GET(_request: Request, context: { params: Promise<{ code: 
         status: room.status,
         currentQuestion: room.current_question,
         questionStartedAt: room.question_started_at,
+        questionElapsedMs,
         totalQuestions: QUIZ_QUESTIONS.length,
         participantCount: participantCount ?? 0,
         responseCount: responseCount ?? 0,

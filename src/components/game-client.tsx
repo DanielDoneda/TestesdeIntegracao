@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { HIEROGLYPHS } from "@/lib/quiz";
 import { rankForScore, scoreForElapsed } from "@/lib/score";
 
@@ -11,6 +11,7 @@ type RoomState = {
   status: "lobby" | "question" | "reveal" | "finished";
   currentQuestion: number;
   questionStartedAt: string | null;
+  questionElapsedMs: number | null;
   totalQuestions: number;
   participantCount: number;
   responseCount: number;
@@ -35,6 +36,7 @@ export function GameClient() {
   const [visibleScore, setVisibleScore] = useState(1000);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const timerAnchor = useRef<{ questionIndex: number; elapsedMs: number; receivedAt: number } | null>(null);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("bugbusters-player");
@@ -54,7 +56,16 @@ export function GameClient() {
     const load = async () => {
       try {
         const data = await readJson(await fetch("/api/rooms/" + player.code, { cache: "no-store" }));
-        if (active) setRoom(data.room);
+        if (active) {
+          if (data.room.status === "question" && typeof data.room.questionElapsedMs === "number") {
+            timerAnchor.current = {
+              questionIndex: data.room.currentQuestion,
+              elapsedMs: data.room.questionElapsedMs,
+              receivedAt: performance.now(),
+            };
+          }
+          setRoom(data.room);
+        }
       } catch (error) {
         if (active) setStatus(error instanceof Error ? error.message : "Sala indisponível.");
       }
@@ -65,16 +76,19 @@ export function GameClient() {
   }, [player]);
 
   const currentQuestion = room?.currentQuestion;
-  const questionStartedAt = room?.questionStartedAt;
   const roomStatus = room?.status;
 
   useEffect(() => {
-    if (roomStatus !== "question" || !questionStartedAt) return;
-    const update = () => setVisibleScore(scoreForElapsed(Date.now() - new Date(questionStartedAt).getTime()));
+    if (roomStatus !== "question") return;
+    const update = () => {
+      const anchor = timerAnchor.current;
+      if (!anchor || anchor.questionIndex !== currentQuestion) return;
+      setVisibleScore(scoreForElapsed(anchor.elapsedMs + performance.now() - anchor.receivedAt));
+    };
     update();
     const interval = window.setInterval(update, 80);
     return () => window.clearInterval(interval);
-  }, [currentQuestion, questionStartedAt, roomStatus]);
+  }, [currentQuestion, roomStatus]);
 
   const rank = useMemo(
     () => rankForScore(player?.score ?? 0, player?.answered_count ?? 0),
