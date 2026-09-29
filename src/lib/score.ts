@@ -21,14 +21,15 @@ export function messageForElapsed(elapsedMs: number) {
 }
 
 export const RANKS = [
-  { min: 8500, title: "Mestre Supremo do MockMvc", sprite: "sprite-wizard" },
-  { min: 7000, title: "Ninja do Spring Boot", sprite: "sprite-ninja" },
-  { min: 5500, title: "Caçador Oficial de Bugs", sprite: "sprite-detective" },
-  { min: 4000, title: "Alquimista dos Testes", sprite: "sprite-alchemist" },
-  { min: 2000, title: "Bug em Processo de Evolução", sprite: "sprite-bug" },
+  { min: 850, title: "Mestre Supremo do MockMvc", sprite: "sprite-wizard" },
+  { min: 700, title: "Ninja do Spring Boot", sprite: "sprite-ninja" },
+  { min: 550, title: "Caçador Oficial de Bugs", sprite: "sprite-detective" },
+  { min: 400, title: "Alquimista dos Testes", sprite: "sprite-alchemist" },
+  { min: 200, title: "Bug em Processo de Evolução", sprite: "sprite-bug" },
   { min: 0, title: "Maven Quer uma Revanche", sprite: "sprite-failure" },
 ];
 
-export function rankForScore(score: number) {
-  return RANKS.find((rank) => score >= rank.min) ?? RANKS[RANKS.length - 1];
+export function rankForScore(score: number, answeredCount = 1) {
+  const average = answeredCount > 0 ? score / answeredCount : 0;
+  return RANKS.find((rank) => average >= rank.min) ?? RANKS[RANKS.length - 1];
 }

@@ -76,7 +76,10 @@ export function GameClient() {
     return () => window.clearInterval(interval);
   }, [currentQuestion, questionStartedAt, roomStatus]);
 
-  const rank = useMemo(() => rankForScore(player?.score ?? 0), [player?.score]);
+  const rank = useMemo(
+    () => rankForScore(player?.score ?? 0, player?.answered_count ?? 0),
+    [player?.score, player?.answered_count],
+  );
   const currentResult = result && result.questionIndex === room?.currentQuestion ? result : null;
 
   async function join(event: FormEvent) {

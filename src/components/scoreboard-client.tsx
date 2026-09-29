@@ -58,7 +58,7 @@ export function ScoreboardClient() {
       <section className="leaderboard" aria-live="polite">
         {!data?.leaderboard.length && <div className="panel empty-state">O placar está fazendo aquecimento. Ainda não entrou ninguém.</div>}
         {data?.leaderboard.map((leader, index) => {
-          const rank = rankForScore(leader.score);
+          const rank = rankForScore(leader.score, leader.answered_count);
           return (
             <article className="leader-row" key={leader.id}>
               <div className="position">{index + 1}º</div>
